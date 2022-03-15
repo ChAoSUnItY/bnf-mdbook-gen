@@ -1,6 +1,6 @@
 mod analyzer;
 
-use analyzer::scanner;
+use analyzer::{entry::Entry, scanner};
 use std::{env, fs};
 
 fn main() {
@@ -9,6 +9,9 @@ fn main() {
 
     let src = fs::read_to_string(file_name).expect(&format!("Unable to open file {}", file_name));
 
-	let result = scanner::scan(&src);
-	println!("{:?}", result);
+    let result = scanner::scan(&src);
+
+    for r in result {
+        print!("{:?}", Entry::new(&r));
+    }
 }

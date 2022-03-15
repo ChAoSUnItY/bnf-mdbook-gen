@@ -1,8 +1,8 @@
 use super::entry;
 
-pub fn scan<'a>(src: &'a String) -> Vec<entry::Entry> {
+pub fn scan<'a>(src: &'a String) -> Vec<entry::EntryHolder> {
     let mut lines = src.lines().peekable();
-    let mut entries = Vec::<entry::Entry>::new();
+    let mut entries = Vec::<entry::EntryHolder>::new();
     let mut description = Vec::<String>::new();
     let mut bnf_syntax = Vec::<String>::new();
 
@@ -29,14 +29,11 @@ pub fn scan<'a>(src: &'a String) -> Vec<entry::Entry> {
 }
 
 fn add_entry(
-    entries:  &mut Vec<entry::Entry>,
+    entries:  &mut Vec<entry::EntryHolder>,
     description: &mut Vec<String>,
     bnf_syntax: &mut Vec<String>,
 ) {
-    entries.push(entry::Entry {
-        descriptions: description.clone(),
-        bnf_syntax: bnf_syntax.clone(),
-    });
+    entries.push(entry::EntryHolder::new(description.clone(), bnf_syntax.clone()));
     description.clear();
     bnf_syntax.clear();
 }
