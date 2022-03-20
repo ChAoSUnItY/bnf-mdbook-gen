@@ -1,7 +1,5 @@
 > **<sup>Syntax:</sup>**\
 > _CASCFile_ :\
-> &nbsp;&nbsp; &nbsp;&nbsp; `1`\
-> &nbsp;&nbsp; | `2`\
-> &nbsp;&nbsp; | [Module](./Module.md)\
+> &nbsp;&nbsp; &nbsp;&nbsp; ( `1`  | `2`  | [Module](./Module.md) )
 
 slow

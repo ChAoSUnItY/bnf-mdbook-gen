@@ -1,4 +1,6 @@
-use ebnf::{Node, SymbolKind};
+use std::ops::Deref;
+
+use ebnf::{Node, SymbolKind, RegexExtKind};
 
 #[derive(Debug)]
 pub struct EntryHolder {
@@ -49,22 +51,25 @@ impl Entry {
         builder.append(&mut self.description);
 
         return builder;
-    }    
+    }
 }
 
 fn format_node_string(node_string: &String) -> String {
     let splitted = node_string.split("\n");
+    let len = splitted.clone().collect::<Vec<&str>>().len();
     let mut builder = Vec::<String>::new();
 
     for (i, sp) in splitted.enumerate() {
         let mut current_builder = String::from("> &nbsp;&nbsp; ");
-        
+
         if i == 0 {
-            current_builder.push_str("&nbsp;&nbsp; "); 
+            current_builder.push_str("&nbsp;&nbsp; ");
         }
 
         current_builder.push_str(sp.trim_end());
-        current_builder.push('\\');
+        if i + 1 != len {
+            current_builder.push('\\');
+        }
         builder.push(current_builder);
     }
 
@@ -72,19 +77,28 @@ fn format_node_string(node_string: &String) -> String {
 }
 
 fn build_node<'a>(node: &'a Node) -> String {
-        match node {
-            Node::Terminal(s) => format!("[{0}](./{0}.md)", s),
-            Node::String(s) => format!("`{}`", s.to_owned()),
-            Node::RegexString(_) => todo!(),
-            Node::Multiple(_) => todo!(),
-            Node::RegexExt(_, _) => todo!(),
-            Node::Symbol(left, kind, right) => format!("{} {} {}", build_node(left), match kind {
-                SymbolKind::Alternation => "\n|",
-                SymbolKind::Concatenation => "\n,"
-            }, build_node(right)),
-            Node::Group(_) => todo!(),
-            Node::Optional(_) => todo!(),
-            Node::Repeat(_) => todo!(),
-            Node::Unknown => todo!(),
-        }
+    match node {
+        Node::Terminal(s) => format!("[{0}](./{0}.md)", s),
+        Node::String(s) => format!("`{}` ", s.to_owned()),
+        Node::RegexString(s) => format!("r`{}`", s),
+        Node::Multiple(ns) => ns.into_iter().map(|n| build_node(n)).collect(),
+        Node::RegexExt(n, k) => format!("{}<sup>{}</sup>", build_node(n), match k {
+            RegexExtKind::Repeat0 => "*",
+            RegexExtKind::Repeat1 => "+",
+            RegexExtKind::Optional => "?"
+        }),
+        Node::Symbol(l, k, r) => format!(
+            "{} {} {}",
+            build_node(l),
+            match k {
+                SymbolKind::Alternation => "|",
+                SymbolKind::Concatenation => ",",
+            },
+            build_node(r)
+        ),
+        Node::Group(n) => format!("( {} )", build_node(n)),
+        Node::Optional(n) => format!("[ {} ]", build_node(n)),
+        Node::Repeat(n) => format!("{{ {} }}", build_node(n)),
+        Node::Unknown => todo!(),
     }
+}
