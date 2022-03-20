@@ -1,2 +1,2 @@
 // slow
-<CASCFile> ::= '1'
+CASCFile ::= '1' | '2';
