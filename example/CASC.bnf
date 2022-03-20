@@ -1,2 +1,4 @@
 // slow
-CASCFile ::= '1' | '2';
+CASCFile ::= '1' | '2' | Module;
+
+Module ::= '3';

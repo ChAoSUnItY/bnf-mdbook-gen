@@ -73,7 +73,7 @@ fn format_node_string(node_string: &String) -> String {
 
 fn build_node<'a>(node: &'a Node) -> String {
         match node {
-            Node::Terminal(s) => s.to_owned(),
+            Node::Terminal(s) => format!("[{0}](./{0}.md)", s),
             Node::String(s) => format!("`{}`", s.to_owned()),
             Node::RegexString(_) => todo!(),
             Node::Multiple(_) => todo!(),
